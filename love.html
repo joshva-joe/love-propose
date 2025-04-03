@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>A Special Message For You</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
+    body {
+      /* background: linear-gradient(135deg, #ff7676, #ff4b81); */
+      background: linear-gradient(135deg, #e1d7d7, #e57496);
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+    }
+    
+    .hearts {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 0;
+    }
+    
+    .heart {
+      position: absolute;
+      opacity: 0;
+      animation: floatUp 4s ease-in-out infinite;
+    }
+    
+    @keyframes floatUp {
+      0% {
+        transform: translateY(100vh) scale(0);
+        opacity: 0;
+      }
+      25% {
+        opacity: 1;
+      }
+      75% {
+        opacity: 0.8;
+      }
+      100% {
+        transform: translateY(-100px) scale(1);
+        opacity: 0;
+      }
+    }
+    
+    .card-container {
+      perspective: 1000px;
+      width: 90%;
+      max-width: 400px;
+      z-index: 10;
+    }
+    
+    .card {
+      position: relative;
+      width: 100%;
+      height: 500px;
+      transform-style: preserve-3d;
+      transition: transform 1s;
+      cursor: pointer;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+      border-radius: 15px;
+    }
+    
+    .card.is-flipped {
+      transform: rotateY(180deg);
+    }
+    
+    .card-face {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      backface-visibility: hidden;
+      border-radius: 15px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      text-align: center;
+    }
+    
+    .card-front {
+      background: linear-gradient(45deg, #ffe6eb, #ffffff);
+      color: #e83e8c;
+    }
+    
+    .card-back {
+      background: linear-gradient(45deg, #ffffff, #ffe6eb);
+      color: #e83e8c;
+      transform: rotateY(180deg);
+    }
+    
+    h1 {
+      font-size: 28px;
+      margin-bottom: 20px;
+      font-weight: 700;
+    }
+    
+    p {
+      font-size: 18px;
+      margin-bottom: 30px;
+      line-height: 1.5;
+    }
+    
+    .pulse {
+      animation: pulse 1.5s infinite;
+    }
+    
+    @keyframes pulse {
+      0% {
+        transform: scale(1);
+      }
+      50% {
+        transform: scale(1.1);
+      }
+      100% {
+        transform: scale(1);
+      }
+    }
+    
+    .heart-icon {
+      font-size: 60px;
+      margin-bottom: 20px;
+      color: #ff4b81;
+    }
+    
+    .btn {
+      background: #ff4b81;
+      color: white;
+      border: none;
+      padding: 12px 30px;
+      border-radius: 50px;
+      font-size: 18px;
+      cursor: pointer;
+      transition: all 0.3s;
+      box-shadow: 0 5px 15px rgba(232, 62, 140, 0.3);
+      margin: 10px;
+    }
+    
+    .btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 20px rgba(232, 62, 140, 0.4);
+    }
+    
+    .btn:active {
+      transform: translateY(0);
+    }
+    
+    .hidden {
+      display: none;
+    }
+    
+    .game-container {
+      width: 90%;
+      max-width: 400px;
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 15px;
+      padding: 20px;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+      text-align: center;
+      z-index: 10;
+    }
+    
+    .memory-game {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      grid-gap: 10px;
+      margin: 20px 0;
+    }
+    
+    .memory-card {
+      height: 80px;
+      border-radius: 10px;
+      background: #ff4b81;
+      cursor: pointer;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 0;
+      color: white;
+      transition: all 0.3s;
+      transform-style: preserve-3d;
+      transform: scale(1);
+    }
+    
+    .memory-card.flipped {
+      transform: rotateY(180deg);
+      background: white;
+      color: #ff4b81;
+      font-size: 18px;
+    }
+    
+    .memory-card.matched {
+      background: #a2f0b3;
+      color: #333;
+      font-size: 18px;
+    }
+    
+    .final-message {
+      width: 90%;
+      max-width: 400px;
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 15px;
+      padding: 30px;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+      text-align: center;
+      z-index: 10;
+    }
+    
+    .confetti {
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      opacity: 0;
+    }
+    
+    @keyframes fall {
+      0% {
+        transform: translateY(-100px) rotate(0deg);
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(100vh) rotate(360deg);
+        opacity: 0;
+      }
+    }
+    
+    /* Responsive screen */
+    @media (max-width: 768px) {
+      .card {
+        height: 450px;
+      }
+      
+      h1 {
+        font-size: 24px;
+      }
+      
+      p {
+        font-size: 16px;
+      }
+      
+      .btn {
+        padding: 10px 25px;
+        font-size: 16px;
+      }
+    }
+    
+    @media (max-width: 480px) {
+      .card {
+        height: 400px;
+      }
+      
+      h1 {
+        font-size: 22px;
+      }
+      
+      p {
+        font-size: 14px;
+        margin-bottom: 20px;
+      }
+      
+      .heart-icon {
+        font-size: 50px;
+      }
+      
+      /* .memory-game {
+        grid-template-columns: repeat(2, 1fr);
+      } */
+    }
+  </style>
+</head>
+<body>
+  <div class="hearts" id="hearts"></div>
+  
+  <!-- Card Step -->
+  <div class="card-container" id="cardContainer">
+    <div class="card" id="card">
+      <div class="card-face card-front">
+        <div class="heart-icon pulse">❤️</div>
+        <h1>Tap to Open a Special Message</h1>
+        <p>I have something important to tell you...</p>
+      </div>
+      <div class="card-face card-back">
+        <div class="heart-icon">❤️</div>
+        <h1>You Mean Everything to Me</h1>
+        <p>Every day with you is a gift. Your smile brightens my world and your love fills my heart.</p>
+        <button class="btn" id="continueBtn">Continue</button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Memory Game Step -->
+  <div class="game-container hidden" id="gameContainer">
+    <h1>Find the Matching Hearts</h1>
+    <p>Complete the game to see a special message</p>
+    <div class="memory-game" id="memoryGame"></div>
+  </div>
+  
+  <!-- Final Message Step -->
+  <div class="final-message hidden" id="finalMessage">
+    <div class="heart-icon pulse">❤️</div>
+    <h1>Will You Be Mine?</h1>
+    <p>My heart belongs to you now and forever. I love everything about you - your kindness, your smile, your beautiful soul.</p>
+    <div>
+      <button class="btn" id="yesBtn">Yes</button>
+      <button class="btn" id="noBtn">No</button>
+    </div>
+  </div>
+
+  <script>
+    // Create floating hearts in the background
+    function createHearts() {
+      const hearts = document.getElementById('hearts');
+      const heartSymbols = ['❤️', '💕', '💖', '💗', '💘'];
+      
+      for (let i = 0; i < 100; i++) {
+        const heart = document.createElement('div');
+        heart.className = 'heart';
+        heart.textContent = heartSymbols[Math.floor(Math.random() * heartSymbols.length)];
+        heart.style.left = Math.random() * 100 + 'vw';
+        heart.style.fontSize = (Math.random() * 20 + 10) + 'px';
+        heart.style.animationDuration = (Math.random() * 5 + 3) + 's';
+        heart.style.animationDelay = (Math.random() * 5) + 's';
+        hearts.appendChild(heart);
+      }
+    }
+    
+    // Card flip functionality
+    const card = document.getElementById('card');
+    const cardContainer = document.getElementById('cardContainer');
+    const gameContainer = document.getElementById('gameContainer');
+    const continueBtn = document.getElementById('continueBtn');
+    const memoryGame = document.getElementById('memoryGame');
+    const finalMessage = document.getElementById('finalMessage');
+    
+    // Initialize the page
+    createHearts();
+    
+    card.addEventListener('click', function() {
+      if (!card.classList.contains('is-flipped')) {
+        card.classList.add('is-flipped');
+      }
+    });
+    
+    continueBtn.addEventListener('click', function() {
+      cardContainer.classList.add('hidden');
+      gameContainer.classList.remove('hidden');
+      initMemoryGame();
+    });
+    
+    // Memory game functionality
+    function initMemoryGame() {
+      const pairs = ['❤️', '💕', '💘', '😘', '💓', '💗'];
+      const gameItems = [...pairs, ...pairs]; // Create pairs
+      
+      // Shuffle the array
+      for (let i = gameItems.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [gameItems[i], gameItems[j]] = [gameItems[j], gameItems[i]];
+      }
+      
+      // Clear game board
+      memoryGame.innerHTML = '';
+      
+      // Create cards
+      gameItems.forEach((item, index) => {
+        const card = document.createElement('div');
+        card.className = 'memory-card';
+        card.dataset.value = item;
+        card.dataset.index = index;
+        card.addEventListener('click', flipCard);
+        memoryGame.appendChild(card);
+      });
+    }
+    
+    let flippedCards = [];
+    let matchedPairs = 0;
+    
+    function flipCard() {
+      // Prevent flipping if already flipped or if two cards are already flipped
+      if (this.classList.contains('flipped') || this.classList.contains('matched') || flippedCards.length >= 2) {
+        return;
+      }
+      
+      this.classList.add('flipped');
+      this.textContent = this.dataset.value;
+      flippedCards.push(this);
+      
+      if (flippedCards.length === 2) {
+        setTimeout(checkForMatch, 500);
+      }
+    }
+    
+    function checkForMatch() {
+      const [card1, card2] = flippedCards;
+      
+      if (card1.dataset.value === card2.dataset.value) {
+        card1.classList.add('matched');
+        card2.classList.add('matched');
+        matchedPairs++;
+        
+        if (matchedPairs === 6) { // All pairs found
+          setTimeout(showFinalMessage, 1000);
+        }
+      } else {
+        card1.classList.remove('flipped');
+        card2.classList.remove('flipped');
+        card1.textContent = '';
+        card2.textContent = '';
+      }
+      
+      flippedCards = [];
+    }
+    
+    function showFinalMessage() {
+      gameContainer.classList.add('hidden');
+      finalMessage.classList.remove('hidden');
+      createConfetti();
+    }
+    
+    // Make "No" button run away
+    const noBtn = document.getElementById('noBtn');
+    noBtn.addEventListener('mouseover', function() {
+      const maxX = window.innerWidth - this.clientWidth;
+      const maxY = window.innerHeight - this.clientHeight;
+      
+      this.style.position = 'absolute';
+      this.style.left = Math.random() * maxX + 'px';
+      this.style.top = Math.random() * maxY + 'px';
+    });
+    
+    // Handle "Yes" button
+    const yesBtn = document.getElementById('yesBtn');
+    yesBtn.addEventListener('click', function() {
+      finalMessage.innerHTML = `
+        <div class="heart-icon pulse">❤️</div>
+        <h1>Yay! I'm so happy!</h1>
+        <p>Thank you for saying yes! You've made me the happiest person alive. I promise to cherish you every day.</p>
+      `;
+      createConfetti();
+    });
+    
+    // Create confetti animation
+    function createConfetti() {
+      const confettiColors = ['#ff4b81', '#ff7676', '#a2f0b3', '#ffffff', '#ffb14b'];
+      for (let i = 0; i < 150; i++) {
+        const confetti = document.createElement('div');
+        confetti.className = 'confetti';
+        confetti.style.left = Math.random() * 100 + 'vw';
+        confetti.style.backgroundColor = confettiColors[Math.floor(Math.random() * confettiColors.length)];
+        confetti.style.opacity = 0;
+        confetti.style.animation = `fall ${Math.random() * 3 + 2}s linear ${Math.random() * 2}s`;
+        document.body.appendChild(confetti);
+      }
+    }
+  </script>
+</body>
+</html>
